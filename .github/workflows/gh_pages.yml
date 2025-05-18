@@ -1,0 +1,49 @@
+name: my-first-book::gh_pages
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    
+permissions:
+  pages: write
+  id-token: write
+  contents: read
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: 'pages'
+  cancel-in-progress: false
+
+jobs:
+  build-gh-pages:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - run: git submodule update --init --recursive
+      # - name: Download font assets
+      #   # use fonts in stable releases
+      #   run: |
+      #     mkdir -p assets/fonts/
+      #     curl -L https://github.com/Myriad-Dreamin/shiroa/releases/download/v0.1.2/font-assets.tar.gz | tar -xvz -C assets/fonts
+      - name: Download & install shiroa
+        run: |
+          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/Myriad-Dreamin/shiroa/releases/download/v0.3.1-rc2/shiroa-installer.sh | sh
+      - name: Build Book
+        run: |
+          shiroa build --font-path ./assets/font_code/ --font-path ./assets/font_sans/ --path-to-root /my-first-book/ -w . 
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          # Upload `/github-pages` sub directory
+          path: './dist'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
