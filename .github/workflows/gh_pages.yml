@@ -36,7 +36,7 @@ jobs:
           curl --proto '=https' --tlsv1.2 -LsSf https://github.com/Myriad-Dreamin/shiroa/releases/download/v0.3.1-rc2/shiroa-installer.sh | sh
       - name: Build Book
         run: |
-          shiroa build --font-path ./assets/font/font_code/ --font-path ./assets/font/font_sans/ --path-to-root /my-first-book/ -w . 
+          shiroa build --font-path ./assert/font/font_code/ --font-path ./assert/font/font_sans/ --path-to-root /my-first-book/ -w . 
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
